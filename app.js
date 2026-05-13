@@ -1,11 +1,12 @@
 const CONFIG_KEY = "sureshPortfolioConfig";
 const HISTORY_KEY = "sureshPortfolioHistory";
 const QUOTE_KEY = "sureshPortfolioQuotes";
+const HOLDINGS_KEY = "sureshPortfolioHoldings";
 const REFRESH_KEY = "sureshPortfolioLastRefresh";
 const INVESTED_DEFAULT = 1300000;
 const DATA_URL = "data/portfolio-data.json";
 
-const holdings = [
+const defaultHoldings = [
   { symbol: "M&MFIN", yahoo: "M%26MFIN.NS", qty: 252, avgCost: 261.53, seedPrice: 300.85 },
   { symbol: "VGUARD", yahoo: "VGUARD.NS", qty: 179, avgCost: 364.97, seedPrice: 335.3 },
   { symbol: "INDHOTEL", yahoo: "INDHOTEL.NS", qty: 159, avgCost: 764.94, seedPrice: 661 },
@@ -24,6 +25,9 @@ const holdings = [
   { symbol: "INDIGO", yahoo: "INDIGO.NS", qty: 18, avgCost: 5871.61, seedPrice: 4663 }
 ];
 
+let holdings = loadJson(HOLDINGS_KEY, defaultHoldings);
+let sortState = { key: "weight", direction: "desc" };
+
 const els = {
   portfolioValue: document.querySelector("#portfolioValue"),
   valueSubtitle: document.querySelector("#valueSubtitle"),
@@ -39,9 +43,13 @@ const els = {
   historyChart: document.querySelector("#historyChart"),
   intradayChart: document.querySelector("#intradayChart"),
   dailyChangeChart: document.querySelector("#dailyChangeChart"),
+  totalChangeChart: document.querySelector("#totalChangeChart"),
+  allocationChart: document.querySelector("#allocationChart"),
   historyMeta: document.querySelector("#historyMeta"),
   intradayMeta: document.querySelector("#intradayMeta"),
   dailyChangeMeta: document.querySelector("#dailyChangeMeta"),
+  totalChangeMeta: document.querySelector("#totalChangeMeta"),
+  allocationLegend: document.querySelector("#allocationLegend"),
   chartTooltip: document.querySelector("#chartTooltip"),
   holdingsBody: document.querySelector("#holdingsBody"),
   dataSource: document.querySelector("#dataSource"),
@@ -52,6 +60,11 @@ const els = {
   investedInput: document.querySelector("#investedInput"),
   startDateInput: document.querySelector("#startDateInput"),
   cashInput: document.querySelector("#cashInput"),
+  addHoldingForm: document.querySelector("#addHoldingForm"),
+  addSymbol: document.querySelector("#addSymbol"),
+  addYahoo: document.querySelector("#addYahoo"),
+  addQty: document.querySelector("#addQty"),
+  addAvgCost: document.querySelector("#addAvgCost"),
   historyRange: document.querySelector("#historyRange"),
   toast: document.querySelector("#toast")
 };
@@ -62,7 +75,8 @@ let state = {
   config: loadJson(CONFIG_KEY, {
     investedAmount: INVESTED_DEFAULT,
     startDate: `${new Date().getFullYear()}-04-01`,
-    cashBalance: 0
+    cashBalance: 0,
+    holdingsEffectiveDate: null
   }),
   quotes: loadJson(QUOTE_KEY, seedQuotes()),
   history: loadJson(HISTORY_KEY, []),
@@ -93,6 +107,7 @@ function save() {
   localStorage.setItem(CONFIG_KEY, JSON.stringify(state.config));
   localStorage.setItem(QUOTE_KEY, JSON.stringify(state.quotes));
   localStorage.setItem(HISTORY_KEY, JSON.stringify(state.history));
+  localStorage.setItem(HOLDINGS_KEY, JSON.stringify(holdings));
   if (state.lastRefresh) {
     localStorage.setItem(REFRESH_KEY, state.lastRefresh);
   }
@@ -141,6 +156,23 @@ function currentValue() {
 
 function previousCloseValue() {
   return portfolioValueFromPrices(previousCloseFor) + cashBalance();
+}
+
+function hasCustomPortfolio() {
+  return Boolean(state.config.holdingsEffectiveDate) || JSON.stringify(holdings) !== JSON.stringify(defaultHoldings);
+}
+
+function holdingMetrics(holding, totalValue = currentValue()) {
+  const quote = state.quotes[holding.symbol] || {};
+  const price = priceFor(holding);
+  const previousClose = previousCloseFor(holding);
+  const value = price * holding.qty;
+  const cost = holding.avgCost * holding.qty;
+  const pnl = value - cost;
+  const dayChange = (price - previousClose) * holding.qty;
+  const dayChangePct = previousClose ? ((price - previousClose) / previousClose) * 100 : 0;
+  const weight = totalValue ? (value / totalValue) * 100 : 0;
+  return { quote, price, previousClose, value, current: value, cost, pnl, dayChange, dayChangePct, weight };
 }
 
 function upsertHistoryPoint(point) {
@@ -212,25 +244,43 @@ function setReturn(el, value) {
 }
 
 function renderHoldings(totalValue) {
-  els.holdingsBody.innerHTML = holdings.map((holding) => {
-    const quote = state.quotes[holding.symbol] || {};
-    const price = priceFor(holding);
-    const value = price * holding.qty;
-    const cost = holding.avgCost * holding.qty;
-    const pnl = value - cost;
-    const weight = totalValue ? (value / totalValue) * 100 : 0;
+  const rows = holdings.map((holding, index) => ({
+    holding,
+    index,
+    metrics: holdingMetrics(holding, totalValue)
+  })).sort((a, b) => compareHoldingRows(a, b));
+
+  els.holdingsBody.innerHTML = rows.map(({ holding, index, metrics }) => {
+    const { quote, price, value, pnl, dayChange, dayChangePct, weight } = metrics;
     return `
-      <tr>
+      <tr data-index="${index}">
         <td><strong>${holding.symbol}</strong></td>
-        <td>${holding.qty}</td>
-        <td>${money(holding.avgCost)}</td>
+        <td><input class="table-input" data-field="qty" data-index="${index}" type="number" min="0" step="1" value="${holding.qty}"></td>
+        <td><input class="table-input" data-field="avgCost" data-index="${index}" type="number" min="0" step="0.01" value="${holding.avgCost}"></td>
         <td>${money(price)}${quote.source === "Screenshot seed" ? " *" : ""}</td>
+        <td class="${dayChange >= 0 ? "gain" : "loss"}">${dayChange >= 0 ? "+" : ""}${money(dayChange)} <small>${pct(dayChangePct)}</small></td>
         <td>${money(value)}</td>
         <td class="${pnl >= 0 ? "gain" : "loss"}">${pnl >= 0 ? "+" : ""}${money(pnl)}</td>
         <td>${weight.toFixed(1)}%</td>
+        <td class="row-actions">
+          <button class="mini-btn" data-action="save" data-index="${index}" type="button">Save</button>
+          <button class="mini-btn danger" data-action="remove" data-index="${index}" type="button">Remove</button>
+        </td>
       </tr>
     `;
   }).join("");
+}
+
+function compareHoldingRows(a, b) {
+  const direction = sortState.direction === "asc" ? 1 : -1;
+  const get = (row) => {
+    if (sortState.key in row.holding) return row.holding[sortState.key];
+    return row.metrics[sortState.key] ?? row.holding.symbol;
+  };
+  const av = get(a);
+  const bv = get(b);
+  if (typeof av === "string") return av.localeCompare(String(bv)) * direction;
+  return ((av || 0) - (bv || 0)) * direction;
 }
 
 async function refreshAll() {
@@ -238,14 +288,17 @@ async function refreshAll() {
   els.refreshBtn.textContent = "Refreshing...";
   try {
     const publishedDataLoaded = await fetchPublishedData();
-    if (publishedDataLoaded) {
+    if (publishedDataLoaded && !hasCustomPortfolio()) {
       state.lastRefresh = new Date().toISOString();
       snapshotToday();
       toast("Portfolio updated from Git data");
       return;
     }
 
-    const results = await Promise.allSettled([fetchQuotes(), fetchHistoricalPortfolio(), fetchIntradayPortfolio()]);
+    const tasks = hasCustomPortfolio()
+      ? [fetchQuotes(), fetchIntradayPortfolio()]
+      : [fetchQuotes(), fetchHistoricalPortfolio(), fetchIntradayPortfolio()];
+    const results = await Promise.allSettled(tasks);
     const failed = results.filter((result) => result.status === "rejected");
     if (failed.length) {
       console.warn("Some market-data refreshes failed", failed.map((result) => result.reason));
@@ -263,20 +316,22 @@ async function refreshAll() {
 }
 
 async function fetchQuotes() {
-  const symbols = holdings.map((h) => h.yahoo).join(",");
-  const url = `https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols}`;
-  const data = await getJson(url);
-  const results = data?.quoteResponse?.result || [];
-  for (const item of results) {
-    const match = holdings.find((h) => decodeURIComponent(h.yahoo) === item.symbol);
-    if (!match || !Number.isFinite(item.regularMarketPrice)) continue;
-    state.quotes[match.symbol] = {
-      price: item.regularMarketPrice,
-      previousClose: item.regularMarketPreviousClose || item.regularMarketPrice,
-      regularMarketTime: item.regularMarketTime || null,
+  await Promise.all(holdings.map(async (holding) => {
+    const data = await getJson(`https://query1.finance.yahoo.com/v8/finance/chart/${holding.yahoo}?range=5d&interval=1d`);
+    const result = data?.chart?.result?.[0];
+    const meta = result?.meta || {};
+    const closes = result?.indicators?.quote?.[0]?.close || [];
+    const validCloses = closes.filter(Number.isFinite);
+    const price = Number.isFinite(meta.regularMarketPrice) ? meta.regularMarketPrice : validCloses.at(-1);
+    const previousClose = Number.isFinite(meta.chartPreviousClose) ? meta.chartPreviousClose : validCloses.at(-2) || price;
+    if (!Number.isFinite(price)) return;
+    state.quotes[holding.symbol] = {
+      price,
+      previousClose,
+      regularMarketTime: meta.regularMarketTime || null,
       source: "Yahoo Finance"
     };
-  }
+  }));
   save();
 }
 
@@ -374,6 +429,27 @@ function drawCharts() {
   }));
   renderChartMeta(els.dailyChangeMeta, changes, { mode: "change" });
   drawBarChart(els.dailyChangeChart, changes, { positive: "#15803d", negative: "#b91c1c" });
+
+  const invested = Number(state.config.investedAmount) || INVESTED_DEFAULT;
+  const totalChanges = history.map((entry) => ({
+    label: entry.date.slice(5),
+    fullLabel: entry.date,
+    value: entry.value - invested
+  }));
+  renderChartMeta(els.totalChangeMeta, totalChanges, { mode: "total" });
+  drawLineChart(els.totalChangeChart, totalChanges, { color: "#7c3aed", fill: "rgba(124,58,237,0.10)", accent: "#0f766e" });
+
+  const totalValue = currentValue();
+  const allocation = holdings.map((holding) => {
+    const metrics = holdingMetrics(holding, totalValue);
+    return {
+      label: holding.symbol,
+      value: metrics.value,
+      weight: metrics.weight
+    };
+  }).filter((entry) => entry.value > 0).sort((a, b) => b.value - a.value);
+  drawDonutChart(els.allocationChart, allocation);
+  renderAllocationLegend(allocation);
 }
 
 function renderChartMeta(container, data, options) {
@@ -386,6 +462,15 @@ function renderChartMeta(container, data, options) {
   const latest = data.at(-1);
   const min = data[values.indexOf(Math.min(...values))];
   const max = data[values.indexOf(Math.max(...values))];
+  if (options.mode === "total") {
+    container.innerHTML = `
+      <span>Current P/L <strong class="${latest.value >= 0 ? "gain" : "loss"}">${latest.value >= 0 ? "+" : ""}${money(latest.value)}</strong></span>
+      <span>Lowest P/L <strong class="${min.value >= 0 ? "gain" : "loss"}">${min.value >= 0 ? "+" : ""}${money(min.value)}</strong></span>
+      <span>Highest P/L <strong class="${max.value >= 0 ? "gain" : "loss"}">${max.value >= 0 ? "+" : ""}${money(max.value)}</strong></span>
+      <span>Latest date <strong>${latest.fullLabel || latest.label}</strong></span>
+    `;
+    return;
+  }
   if (options.mode === "change") {
     const positiveDays = data.filter((entry) => entry.value > 0).length;
     container.innerHTML = `
@@ -422,10 +507,10 @@ async function fetchPublishedData() {
 
 function applyPublishedData(data) {
   if (data?.quotes) {
-    state.quotes = data.quotes;
+    state.quotes = { ...state.quotes, ...data.quotes };
   }
   if (Array.isArray(data?.history)) {
-    state.history = data.history;
+    state.history = mergePublishedHistory(data.history);
   }
   if (Array.isArray(data?.intraday)) {
     sessionStorage.setItem("sureshPortfolioIntraday", JSON.stringify(data.intraday));
@@ -434,6 +519,33 @@ function applyPublishedData(data) {
     state.lastRefresh = data.refreshedAt;
   }
   save();
+}
+
+function mergePublishedHistory(publishedHistory) {
+  const effectiveDate = state.config.holdingsEffectiveDate;
+  if (!effectiveDate) return publishedHistory;
+  const localFuture = state.history.filter((entry) => entry.date >= effectiveDate);
+  const byDate = new Map();
+  for (const entry of publishedHistory) {
+    if (entry.date < effectiveDate) byDate.set(entry.date, entry);
+  }
+  for (const entry of localFuture) {
+    byDate.set(entry.date, entry);
+  }
+  return [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date));
+}
+
+function markHoldingsChanged() {
+  state.config.holdingsEffectiveDate = state.config.holdingsEffectiveDate || todayKey();
+  snapshotToday();
+  save();
+  render();
+}
+
+function syncInputsFromState() {
+  els.investedInput.value = state.config.investedAmount;
+  els.startDateInput.value = state.config.startDate;
+  els.cashInput.value = state.config.cashBalance || 0;
 }
 
 function loadJsonFromSession(key, fallback) {
@@ -519,6 +631,57 @@ function drawBarChart(canvas, data, opts) {
   drawValueTag(ctx, `${extreme.value >= 0 ? "+" : ""}${money(extreme.value, true)}`, extremePoint.x, extremePoint.y, extreme.value >= 0 ? opts.positive : opts.negative, width);
   drawAxisLabels(ctx, data, width, height, pad);
   bindChartTooltip(canvas, hoverPoints, { type: "bar" });
+}
+
+function drawDonutChart(canvas, data) {
+  const { ctx, width, height } = setupCanvas(canvas);
+  clearChart(ctx, width, height);
+  if (!data.length) return drawEmpty(ctx, width, height, "Allocation appears after holdings load");
+  const colors = ["#0f766e", "#2563eb", "#7c3aed", "#f59e0b", "#dc2626", "#0891b2", "#65a30d", "#c2410c", "#be185d", "#475569"];
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+  const cx = width / 2;
+  const cy = height / 2;
+  const radius = Math.min(width, height) * 0.36;
+  const inner = radius * 0.58;
+  let start = -Math.PI / 2;
+  const hoverPoints = [];
+  data.forEach((item, index) => {
+    const angle = (item.value / total) * Math.PI * 2;
+    const end = start + angle;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, radius, start, end);
+    ctx.closePath();
+    ctx.fillStyle = colors[index % colors.length];
+    ctx.fill();
+    hoverPoints.push({ ...item, x: cx + Math.cos(start + angle / 2) * radius, y: cy + Math.sin(start + angle / 2) * radius });
+    start = end;
+  });
+  ctx.globalCompositeOperation = "destination-out";
+  ctx.beginPath();
+  ctx.arc(cx, cy, inner, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.globalCompositeOperation = "source-over";
+  ctx.fillStyle = "#111827";
+  ctx.font = "800 18px system-ui";
+  ctx.textAlign = "center";
+  ctx.fillText(money(total, true), cx, cy - 4);
+  ctx.fillStyle = "#64748b";
+  ctx.font = "700 12px system-ui";
+  ctx.fillText("Invested", cx, cy + 16);
+  bindChartTooltip(canvas, hoverPoints, { type: "donut" });
+}
+
+function renderAllocationLegend(data) {
+  if (!els.allocationLegend) return;
+  const colors = ["#0f766e", "#2563eb", "#7c3aed", "#f59e0b", "#dc2626", "#0891b2", "#65a30d", "#c2410c", "#be185d", "#475569"];
+  els.allocationLegend.innerHTML = data.slice(0, 10).map((item, index) => `
+    <div>
+      <span class="legend-swatch" style="background:${colors[index % colors.length]}"></span>
+      <strong>${item.label}</strong>
+      <span>${item.weight.toFixed(1)}%</span>
+    </div>
+  `).join("");
 }
 
 function clearChart(ctx, width, height) {
@@ -671,12 +834,79 @@ function toast(message) {
   setTimeout(() => els.toast.classList.remove("show"), 2600);
 }
 
+function saveHoldingRow(index) {
+  const row = els.holdingsBody.querySelector(`tr[data-index="${index}"]`);
+  if (!row || !holdings[index]) return;
+  const qty = Number(row.querySelector('[data-field="qty"]')?.value);
+  const avgCost = Number(row.querySelector('[data-field="avgCost"]')?.value);
+  if (!Number.isFinite(qty) || qty < 0 || !Number.isFinite(avgCost) || avgCost < 0) {
+    toast("Enter a valid quantity and average cost");
+    return;
+  }
+  holdings[index] = {
+    ...holdings[index],
+    qty,
+    avgCost
+  };
+  markHoldingsChanged();
+  toast(`${holdings[index].symbol} updated from today`);
+}
+
+function removeHolding(index) {
+  const holding = holdings[index];
+  if (!holding) return;
+  holdings.splice(index, 1);
+  markHoldingsChanged();
+  toast(`${holding.symbol} removed from today`);
+}
+
+function addHolding() {
+  const symbol = els.addSymbol.value.trim().toUpperCase();
+  const yahoo = encodeYahooSymbol(els.addYahoo.value.trim() || `${symbol}.NS`);
+  const qty = Number(els.addQty.value);
+  const avgCost = Number(els.addAvgCost.value);
+  if (!symbol || !Number.isFinite(qty) || qty <= 0 || !Number.isFinite(avgCost) || avgCost < 0) {
+    toast("Add symbol, quantity, and average cost");
+    return;
+  }
+  if (holdings.some((holding) => holding.symbol === symbol)) {
+    toast(`${symbol} already exists. Edit its row instead.`);
+    return;
+  }
+  holdings.push({ symbol, yahoo, qty, avgCost, seedPrice: avgCost });
+  if (!state.quotes[symbol]) {
+    state.quotes[symbol] = {
+      price: avgCost,
+      previousClose: avgCost,
+      regularMarketTime: null,
+      source: "Manual seed"
+    };
+  }
+  els.addHoldingForm.reset();
+  markHoldingsChanged();
+  toast(`${symbol} added from today`);
+}
+
+function encodeYahooSymbol(value) {
+  return value.replace(/&/g, "%26").toUpperCase();
+}
+
 function setupEvents() {
   els.refreshBtn.addEventListener("click", refreshAll);
   els.historyRange.addEventListener("change", drawCharts);
-  els.investedInput.value = state.config.investedAmount;
-  els.startDateInput.value = state.config.startDate;
-  els.cashInput.value = state.config.cashBalance || 0;
+  document.querySelectorAll(".sort-btn").forEach((button) => {
+    button.addEventListener("click", () => {
+      const key = button.dataset.sort;
+      sortState = {
+        key,
+        direction: sortState.key === key && sortState.direction === "desc" ? "asc" : "desc"
+      };
+      renderHoldings(currentValue());
+      document.querySelectorAll(".sort-btn").forEach((btn) => btn.removeAttribute("aria-sort"));
+      button.setAttribute("aria-sort", sortState.direction);
+    });
+  });
+  syncInputsFromState();
   els.investedInput.addEventListener("change", () => {
     state.config.investedAmount = Number(els.investedInput.value) || INVESTED_DEFAULT;
     save();
@@ -690,7 +920,30 @@ function setupEvents() {
   els.cashInput.addEventListener("change", () => {
     state.config.cashBalance = Number(els.cashInput.value) || 0;
     save();
+    snapshotToday();
     render();
+  });
+  els.holdingsBody.addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-action]");
+    if (!button) return;
+    const index = Number(button.dataset.index);
+    if (button.dataset.action === "save") {
+      saveHoldingRow(index);
+    }
+    if (button.dataset.action === "remove") {
+      removeHolding(index);
+    }
+  });
+  els.holdingsBody.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter") return;
+    const input = event.target.closest(".table-input");
+    if (!input) return;
+    event.preventDefault();
+    saveHoldingRow(Number(input.dataset.index));
+  });
+  els.addHoldingForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    addHolding();
   });
   els.exportBtn.addEventListener("click", exportData);
   els.importInput.addEventListener("change", importData);
@@ -710,7 +963,7 @@ function setupEvents() {
 }
 
 function exportData() {
-  const blob = new Blob([JSON.stringify({ config: state.config, history: state.history, quotes: state.quotes }, null, 2)], { type: "application/json" });
+  const blob = new Blob([JSON.stringify({ config: state.config, holdings, history: state.history, quotes: state.quotes }, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
@@ -724,6 +977,7 @@ async function importData(event) {
   if (!file) return;
   const data = JSON.parse(await file.text());
   state.config = data.config || state.config;
+  holdings = data.holdings || holdings;
   state.history = data.history || state.history;
   state.quotes = data.quotes || state.quotes;
   save();

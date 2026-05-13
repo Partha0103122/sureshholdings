@@ -7,7 +7,7 @@
     <title>Suresh Holdings</title>
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="icon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="styles.css?v=3">
+    <link rel="stylesheet" href="styles.css?v=4">
   </head>
   <body>
     <header class="app-header">
@@ -102,6 +102,30 @@
           <div id="dailyChangeMeta" class="chart-meta"></div>
           <canvas id="dailyChangeChart" height="230" aria-label="Daily change chart"></canvas>
         </article>
+
+        <article class="chart-panel">
+          <div class="panel-title">
+            <div>
+              <h2>Total value change</h2>
+              <p>Portfolio value minus the original transfer amount.</p>
+            </div>
+          </div>
+          <div id="totalChangeMeta" class="chart-meta"></div>
+          <canvas id="totalChangeChart" height="230" aria-label="Total value change chart"></canvas>
+        </article>
+
+        <article class="chart-panel allocation-panel">
+          <div class="panel-title">
+            <div>
+              <h2>Weightage distribution</h2>
+              <p>Current allocation by holding value.</p>
+            </div>
+          </div>
+          <div class="allocation-layout">
+            <canvas id="allocationChart" height="230" aria-label="Weightage distribution donut chart"></canvas>
+            <div id="allocationLegend" class="allocation-legend"></div>
+          </div>
+        </article>
       </section>
 
       <section class="tools-band">
@@ -128,21 +152,30 @@
         <div class="panel-title">
           <div>
             <h2>Holdings</h2>
-            <p>Quantity and average cost are from the screenshot; current values update from live quotes.</p>
+            <p>Edit quantity or average cost after a buy/sell. Past history remains unchanged; today onward uses the latest table.</p>
           </div>
           <span id="dataSource" class="status-pill">Offline seed</span>
         </div>
+        <form id="addHoldingForm" class="add-holding">
+          <input id="addSymbol" placeholder="Symbol" aria-label="New symbol">
+          <input id="addYahoo" placeholder="Yahoo code, e.g. TCS.NS" aria-label="Yahoo Finance code">
+          <input id="addQty" type="number" min="0" step="1" placeholder="Qty" aria-label="New quantity">
+          <input id="addAvgCost" type="number" min="0" step="0.01" placeholder="Avg cost" aria-label="New average cost">
+          <button type="submit">Add holding</button>
+        </form>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>Symbol</th>
-                <th>Qty</th>
-                <th>Avg cost</th>
-                <th>Price</th>
-                <th>Current</th>
-                <th>P/L</th>
-                <th>Weight</th>
+                <th><button class="sort-btn" data-sort="symbol" type="button">Symbol</button></th>
+                <th><button class="sort-btn" data-sort="qty" type="button">Qty</button></th>
+                <th><button class="sort-btn" data-sort="avgCost" type="button">Avg cost</button></th>
+                <th><button class="sort-btn" data-sort="price" type="button">Price</button></th>
+                <th><button class="sort-btn" data-sort="dayChange" type="button">Day change</button></th>
+                <th><button class="sort-btn" data-sort="current" type="button">Current</button></th>
+                <th><button class="sort-btn" data-sort="pnl" type="button">P/L</button></th>
+                <th><button class="sort-btn" data-sort="weight" type="button">Weight</button></th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody id="holdingsBody"></tbody>
@@ -154,6 +187,6 @@
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <div id="chartTooltip" class="chart-tooltip" hidden></div>
 
-    <script src="app.js?v=7"></script>
+    <script src="app.js?v=10"></script>
   </body>
 </html>

@@ -47,6 +47,43 @@ button,
   white-space: nowrap;
 }
 
+.sort-btn,
+.mini-btn {
+  min-height: auto;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font-weight: inherit;
+}
+
+.sort-btn {
+  width: 100%;
+  justify-content: flex-end;
+  gap: 4px;
+  text-transform: uppercase;
+}
+
+th:first-child .sort-btn {
+  justify-content: flex-start;
+}
+
+.sort-btn::after {
+  content: "sort";
+  color: #94a3b8;
+  font-size: 0.72rem;
+}
+
+.sort-btn[aria-sort="asc"]::after {
+  content: "^";
+  color: var(--accent);
+}
+
+.sort-btn[aria-sort="desc"]::after {
+  content: "v";
+  color: var(--accent);
+}
+
 button.ghost,
 .file-button {
   background: #e7eef7;
@@ -194,6 +231,11 @@ th {
   grid-column: 1 / -1;
 }
 
+.allocation-panel {
+  display: grid;
+  align-content: start;
+}
+
 .panel-title {
   display: flex;
   justify-content: space-between;
@@ -248,6 +290,36 @@ canvas {
   border: 1px solid #edf2f7;
 }
 
+.allocation-layout {
+  display: grid;
+  grid-template-columns: minmax(210px, 0.9fr) 1.1fr;
+  gap: 14px;
+  align-items: center;
+}
+
+.allocation-legend {
+  display: grid;
+  gap: 8px;
+}
+
+.allocation-legend div {
+  display: grid;
+  grid-template-columns: 14px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  border: 1px solid #dbe4ef;
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: #f8fafc;
+  font-size: 0.86rem;
+}
+
+.legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
 .tools-band {
   margin-top: 14px;
   box-shadow: none;
@@ -278,6 +350,26 @@ select {
   margin: 14px 0 32px;
 }
 
+.add-holding {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr 0.7fr 0.8fr auto;
+  gap: 10px;
+  margin: 4px 0 14px;
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px solid #dbe4ef;
+  border-radius: 8px;
+}
+
+.add-holding input,
+.table-input {
+  min-height: 36px;
+  border: 1px solid #d7dee9;
+  border-radius: 7px;
+  background: #ffffff;
+  padding: 0 9px;
+}
+
 .table-wrap {
   overflow-x: auto;
 }
@@ -285,7 +377,7 @@ select {
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 780px;
+  min-width: 1060px;
 }
 
 th,
@@ -302,6 +394,31 @@ td:first-child {
 
 tbody tr:hover {
   background: #f7fafc;
+}
+
+.table-input {
+  width: 112px;
+  text-align: right;
+}
+
+.row-actions {
+  white-space: nowrap;
+}
+
+.mini-btn {
+  border-radius: 7px;
+  background: #e7eef7;
+  color: #16324f;
+  min-height: 32px;
+  padding: 0 10px;
+  font-size: 0.78rem;
+  text-transform: none;
+}
+
+.mini-btn.danger {
+  color: #991b1b;
+  background: #fee2e2;
+  margin-left: 5px;
 }
 
 .gain {
@@ -381,8 +498,14 @@ tbody tr:hover {
   .tools-band,
   .tools-band label,
   .header-actions,
-  .header-actions button {
+  .header-actions button,
+  .add-holding {
     width: 100%;
+  }
+
+  .add-holding,
+  .allocation-layout {
+    grid-template-columns: 1fr;
   }
 
   .panel-title {
