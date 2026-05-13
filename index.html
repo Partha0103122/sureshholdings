@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0f172a">
+    <title>Suresh Holdings</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css?v=2">
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Portfolio PWA</p>
+        <h1>Suresh Holdings</h1>
+      </div>
+      <div class="header-actions">
+        <button id="installBtn" class="ghost" hidden>Install</button>
+        <button id="refreshBtn">Refresh prices</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="summary-grid" aria-label="Portfolio summary">
+        <article>
+          <span>Portfolio value</span>
+          <strong id="portfolioValue">--</strong>
+          <small id="valueSubtitle">Waiting for prices</small>
+        </article>
+        <article>
+          <span>Portfolio P/L</span>
+          <strong id="portfolioPnl">--</strong>
+          <small>Against original transfer of ₹13,00,000</small>
+        </article>
+        <article>
+          <span>Day change</span>
+          <strong id="dayChange">--</strong>
+          <small id="dayChangeSubtitle">From prior close</small>
+        </article>
+        <article>
+          <span>Last update</span>
+          <strong id="lastUpdate">--</strong>
+          <small id="marketState">Market data is delayed/free source</small>
+        </article>
+      </section>
+
+      <section class="returns-band" aria-label="Returns">
+        <div>
+          <span>Weekly</span>
+          <strong id="weeklyReturn">--</strong>
+        </div>
+        <div>
+          <span>Monthly</span>
+          <strong id="monthlyReturn">--</strong>
+        </div>
+        <div>
+          <span>Yearly</span>
+          <strong id="yearlyReturn">--</strong>
+        </div>
+        <div>
+          <span>Since transfer</span>
+          <strong id="sinceTransferReturn">--</strong>
+        </div>
+      </section>
+
+      <section class="charts">
+        <article class="chart-panel wide">
+          <div class="panel-title">
+            <div>
+              <h2>Historical portfolio value</h2>
+              <p>Daily close from April 1, with saved local history filled forward.</p>
+            </div>
+            <select id="historyRange" aria-label="Historical range">
+              <option value="all">Since Apr 1</option>
+              <option value="30">30 days</option>
+              <option value="7">7 days</option>
+            </select>
+          </div>
+          <canvas id="historyChart" height="260" aria-label="Historical portfolio value chart"></canvas>
+        </article>
+
+        <article class="chart-panel">
+          <div class="panel-title">
+            <div>
+              <h2>Intraday movement</h2>
+              <p>Aggregated from 5 minute Yahoo Finance candles when available.</p>
+            </div>
+          </div>
+          <canvas id="intradayChart" height="230" aria-label="Intraday portfolio value chart"></canvas>
+        </article>
+
+        <article class="chart-panel">
+          <div class="panel-title">
+            <div>
+              <h2>Daily value change</h2>
+              <p>Change versus the previous stored trading day.</p>
+            </div>
+          </div>
+          <canvas id="dailyChangeChart" height="230" aria-label="Daily change chart"></canvas>
+        </article>
+      </section>
+
+      <section class="tools-band">
+        <label>
+          Invested amount
+          <input id="investedInput" type="number" min="0" step="1000">
+        </label>
+        <label>
+          History starts
+          <input id="startDateInput" type="date">
+        </label>
+        <button id="exportBtn" class="ghost">Export data</button>
+        <label class="file-button">
+          Import data
+          <input id="importInput" type="file" accept="application/json">
+        </label>
+      </section>
+
+      <section class="holdings-section">
+        <div class="panel-title">
+          <div>
+            <h2>Holdings</h2>
+            <p>Quantity and average cost are from the screenshot; current values update from live quotes.</p>
+          </div>
+          <span id="dataSource" class="status-pill">Offline seed</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Symbol</th>
+                <th>Qty</th>
+                <th>Avg cost</th>
+                <th>Price</th>
+                <th>Current</th>
+                <th>P/L</th>
+                <th>Weight</th>
+              </tr>
+            </thead>
+            <tbody id="holdingsBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script src="app.js?v=4"></script>
+  </body>
+</html>
