@@ -3,6 +3,7 @@ const HISTORY_KEY = "sureshPortfolioHistory";
 const QUOTE_KEY = "sureshPortfolioQuotes";
 const REFRESH_KEY = "sureshPortfolioLastRefresh";
 const INVESTED_DEFAULT = 1300000;
+const DATA_URL = "data/portfolio-data.json";
 
 const holdings = [
   { symbol: "M&MFIN", yahoo: "M%26MFIN.NS", qty: 252, avgCost: 261.53, seedPrice: 300.85 },
@@ -46,6 +47,7 @@ const els = {
   importInput: document.querySelector("#importInput"),
   investedInput: document.querySelector("#investedInput"),
   startDateInput: document.querySelector("#startDateInput"),
+  cashInput: document.querySelector("#cashInput"),
   historyRange: document.querySelector("#historyRange"),
   toast: document.querySelector("#toast")
 };
@@ -54,7 +56,8 @@ let deferredInstallPrompt;
 let state = {
   config: loadJson(CONFIG_KEY, {
     investedAmount: INVESTED_DEFAULT,
-    startDate: `${new Date().getFullYear()}-04-01`
+    startDate: `${new Date().getFullYear()}-04-01`,
+    cashBalance: 0
   }),
   quotes: loadJson(QUOTE_KEY, seedQuotes()),
   history: loadJson(HISTORY_KEY, []),
@@ -123,12 +126,16 @@ function portfolioValueFromPrices(priceGetter) {
   return holdings.reduce((sum, holding) => sum + holding.qty * priceGetter(holding), 0);
 }
 
+function cashBalance() {
+  return Number(state.config.cashBalance) || 0;
+}
+
 function currentValue() {
-  return portfolioValueFromPrices(priceFor);
+  return portfolioValueFromPrices(priceFor) + cashBalance();
 }
 
 function previousCloseValue() {
-  return portfolioValueFromPrices(previousCloseFor);
+  return portfolioValueFromPrices(previousCloseFor) + cashBalance();
 }
 
 function upsertHistoryPoint(point) {
@@ -157,7 +164,7 @@ function render() {
   const latestHistory = state.history.at(-1);
 
   els.portfolioValue.textContent = money(value);
-  els.valueSubtitle.textContent = `${holdings.length} holdings tracked`;
+  els.valueSubtitle.textContent = `${holdings.length} holdings + ${money(cashBalance())} cash`;
   els.portfolioPnl.textContent = `${pnl >= 0 ? "+" : ""}${money(pnl)}`;
   els.portfolioPnl.className = pnl >= 0 ? "gain" : "loss";
   els.dayChange.textContent = `${day >= 0 ? "+" : ""}${money(day)} (${pct(dayPct)})`;
@@ -225,6 +232,14 @@ async function refreshAll() {
   els.refreshBtn.disabled = true;
   els.refreshBtn.textContent = "Refreshing...";
   try {
+    const publishedDataLoaded = await fetchPublishedData();
+    if (publishedDataLoaded) {
+      state.lastRefresh = new Date().toISOString();
+      snapshotToday();
+      toast("Portfolio updated from Git data");
+      return;
+    }
+
     const results = await Promise.allSettled([fetchQuotes(), fetchHistoricalPortfolio(), fetchIntradayPortfolio()]);
     const failed = results.filter((result) => result.status === "rejected");
     if (failed.length) {
@@ -349,6 +364,32 @@ function drawCharts() {
     value: entry.value - history[index].value
   }));
   drawBarChart(els.dailyChangeChart, changes, { positive: "#15803d", negative: "#b91c1c" });
+}
+
+async function fetchPublishedData() {
+  try {
+    const data = await getJson(`${DATA_URL}?t=${Date.now()}`);
+    applyPublishedData(data);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function applyPublishedData(data) {
+  if (data?.quotes) {
+    state.quotes = data.quotes;
+  }
+  if (Array.isArray(data?.history)) {
+    state.history = data.history;
+  }
+  if (Array.isArray(data?.intraday)) {
+    sessionStorage.setItem("sureshPortfolioIntraday", JSON.stringify(data.intraday));
+  }
+  if (data?.refreshedAt) {
+    state.lastRefresh = data.refreshedAt;
+  }
+  save();
 }
 
 function loadJsonFromSession(key, fallback) {
@@ -502,6 +543,7 @@ function setupEvents() {
   els.historyRange.addEventListener("change", drawCharts);
   els.investedInput.value = state.config.investedAmount;
   els.startDateInput.value = state.config.startDate;
+  els.cashInput.value = state.config.cashBalance || 0;
   els.investedInput.addEventListener("change", () => {
     state.config.investedAmount = Number(els.investedInput.value) || INVESTED_DEFAULT;
     save();
@@ -511,6 +553,11 @@ function setupEvents() {
     state.config.startDate = els.startDateInput.value;
     save();
     await refreshAll();
+  });
+  els.cashInput.addEventListener("change", () => {
+    state.config.cashBalance = Number(els.cashInput.value) || 0;
+    save();
+    render();
   });
   els.exportBtn.addEventListener("click", exportData);
   els.importInput.addEventListener("change", importData);
@@ -576,4 +623,7 @@ function scheduleAutoRefresh() {
 setupEvents();
 render();
 setupPwa();
-scheduleAutoRefresh();
+fetchPublishedData().then(() => {
+  render();
+  scheduleAutoRefresh();
+});

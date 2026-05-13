@@ -1,9 +1,10 @@
-const CACHE_NAME = "suresh-holdings-v4";
+const CACHE_NAME = "suresh-holdings-v5";
 const APP_ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
+  "./data/portfolio-data.json",
   "./manifest.webmanifest",
   "./icon.svg"
 ];
@@ -23,6 +24,11 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const request = event.request;
   if (request.method !== "GET") return;
+  const url = new URL(request.url);
+  if (url.origin === location.origin && url.pathname.endsWith("/data/portfolio-data.json")) {
+    event.respondWith(fetch(request).catch(() => caches.match(request)));
+    return;
+  }
   event.respondWith(
     caches.match(request).then((cached) => cached || fetch(request).then((response) => {
       if (new URL(request.url).origin === location.origin) {
