@@ -7,7 +7,7 @@
     <title>Suresh Holdings</title>
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="icon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="styles.css?v=2">
+    <link rel="stylesheet" href="styles.css?v=3">
   </head>
   <body>
     <header class="app-header">
@@ -69,7 +69,7 @@
           <div class="panel-title">
             <div>
               <h2>Historical portfolio value</h2>
-              <p>Daily close from April 1, refreshed from the Git data file.</p>
+              <p>Daily close from April 1. Dates with incomplete quote data are skipped.</p>
             </div>
             <select id="historyRange" aria-label="Historical range">
               <option value="all">Since Apr 1</option>
@@ -77,6 +77,7 @@
               <option value="7">7 days</option>
             </select>
           </div>
+          <div id="historyMeta" class="chart-meta"></div>
           <canvas id="historyChart" height="260" aria-label="Historical portfolio value chart"></canvas>
         </article>
 
@@ -84,9 +85,10 @@
           <div class="panel-title">
             <div>
               <h2>Intraday movement</h2>
-              <p>Aggregated from 5 minute Yahoo Finance candles when available.</p>
+              <p>5 minute candles with last known prices carried forward across holdings.</p>
             </div>
           </div>
+          <div id="intradayMeta" class="chart-meta"></div>
           <canvas id="intradayChart" height="230" aria-label="Intraday portfolio value chart"></canvas>
         </article>
 
@@ -97,6 +99,7 @@
               <p>Change versus the previous stored trading day.</p>
             </div>
           </div>
+          <div id="dailyChangeMeta" class="chart-meta"></div>
           <canvas id="dailyChangeChart" height="230" aria-label="Daily change chart"></canvas>
         </article>
       </section>
@@ -149,7 +152,8 @@
     </main>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <div id="chartTooltip" class="chart-tooltip" hidden></div>
 
-    <script src="app.js?v=5"></script>
+    <script src="app.js?v=7"></script>
   </body>
 </html>

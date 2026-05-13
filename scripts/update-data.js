@@ -102,7 +102,7 @@ async function chartPoints(url) {
   })).filter((point) => Number.isFinite(point.close));
 }
 
-async function fetchHistorical(existingHistory) {
+async function fetchHistorical(quotes) {
   const start = new Date(`${startDate}T00:00:00+05:30`);
   const end = new Date();
   end.setDate(end.getDate() + 1);
@@ -113,7 +113,7 @@ async function fetchHistorical(existingHistory) {
     points: await chartPoints(`https://query1.finance.yahoo.com/v8/finance/chart/${holding.yahoo}?period1=${period1}&period2=${period2}&interval=1d`)
   })));
   const dates = new Set(series.flatMap((item) => item.points.map((point) => point.date)));
-  const historyByDate = new Map((existingHistory || []).map((entry) => [entry.date, entry]));
+  const historyByDate = new Map();
 
   for (const date of [...dates].sort()) {
     let value = 0;
@@ -125,7 +125,7 @@ async function fetchHistorical(existingHistory) {
         count += 1;
       }
     }
-    if (count >= Math.ceil(holdings.length * 0.75)) {
+    if (count === holdings.length) {
       historyByDate.set(date, {
         date,
         value: Number(value.toFixed(2)),
@@ -134,6 +134,17 @@ async function fetchHistorical(existingHistory) {
       });
     }
   }
+
+  const todayValue = holdings.reduce((sum, holding) => {
+    const price = quotes[holding.symbol]?.price;
+    return sum + (Number.isFinite(price) ? price : holding.seedPrice) * holding.qty;
+  }, 0);
+  historyByDate.set(localDateKey(), {
+    date: localDateKey(),
+    value: Number(todayValue.toFixed(2)),
+    source: "Yahoo current quote",
+    savedAt: new Date().toISOString()
+  });
 
   return [...historyByDate.values()].sort((a, b) => a.date.localeCompare(b.date));
 }
@@ -145,18 +156,19 @@ async function fetchIntraday() {
   })));
   const times = new Set(series.flatMap((item) => item.points.map((point) => point.time)));
   const intraday = [];
+  const latestBySymbol = new Map();
 
   for (const time of [...times].sort((a, b) => a - b)) {
-    let value = 0;
-    let count = 0;
     for (const { holding, points } of series) {
       const point = points.find((entry) => entry.time === time);
       if (point) {
-        value += point.close * holding.qty;
-        count += 1;
+        latestBySymbol.set(holding.symbol, point.close);
       }
     }
-    if (count >= Math.ceil(holdings.length * 0.75)) {
+    if (latestBySymbol.size === holdings.length) {
+      const value = holdings.reduce((sum, holding) => {
+        return sum + latestBySymbol.get(holding.symbol) * holding.qty;
+      }, 0);
       intraday.push({ time, value: Number(value.toFixed(2)) });
     }
   }
@@ -166,9 +178,9 @@ async function fetchIntraday() {
 
 async function main() {
   const existing = await readExistingData();
-  const [quotes, history, intraday] = await Promise.all([
-    fetchQuotes(existing.quotes),
-    fetchHistorical(existing.history),
+  const quotes = await fetchQuotes(existing.quotes);
+  const [history, intraday] = await Promise.all([
+    fetchHistorical(quotes),
     fetchIntraday()
   ]);
 

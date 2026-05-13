@@ -39,6 +39,10 @@ const els = {
   historyChart: document.querySelector("#historyChart"),
   intradayChart: document.querySelector("#intradayChart"),
   dailyChangeChart: document.querySelector("#dailyChangeChart"),
+  historyMeta: document.querySelector("#historyMeta"),
+  intradayMeta: document.querySelector("#intradayMeta"),
+  dailyChangeMeta: document.querySelector("#dailyChangeMeta"),
+  chartTooltip: document.querySelector("#chartTooltip"),
   holdingsBody: document.querySelector("#holdingsBody"),
   dataSource: document.querySelector("#dataSource"),
   refreshBtn: document.querySelector("#refreshBtn"),
@@ -53,6 +57,7 @@ const els = {
 };
 
 let deferredInstallPrompt;
+const chartState = new WeakMap();
 let state = {
   config: loadJson(CONFIG_KEY, {
     investedAmount: INVESTED_DEFAULT,
@@ -296,7 +301,7 @@ async function fetchHistoricalPortfolio() {
         count += 1;
       }
     }
-    if (count > holdings.length * 0.65) {
+    if (count === holdings.length) {
       upsertHistoryPoint({ date, value: total, source: "Yahoo daily close", savedAt: new Date().toISOString() });
     }
   }
@@ -310,17 +315,16 @@ async function fetchIntradayPortfolio() {
   }));
   const times = new Set(series.flatMap((item) => item.data.map((point) => point.time)));
   const intraday = [];
+  const latestBySymbol = new Map();
   for (const time of [...times].sort((a, b) => a - b)) {
-    let total = 0;
-    let count = 0;
     for (const { holding, data } of series) {
       const point = data.find((entry) => entry.time === time);
       if (point) {
-        total += point.close * holding.qty;
-        count += 1;
+        latestBySymbol.set(holding.symbol, point.close);
       }
     }
-    if (count > holdings.length * 0.65) {
+    if (latestBySymbol.size === holdings.length) {
+      const total = holdings.reduce((sum, holding) => sum + latestBySymbol.get(holding.symbol) * holding.qty, 0);
       intraday.push({ time, value: total });
     }
   }
@@ -348,22 +352,62 @@ async function chartPoints(url, includeTime = false) {
 function drawCharts() {
   const range = els.historyRange.value;
   const history = range === "all" ? state.history : state.history.slice(-Number(range));
+  renderChartMeta(els.historyMeta, history, { mode: "value" });
   drawLineChart(els.historyChart, history.map((entry) => ({
     label: entry.date.slice(5),
+    fullLabel: entry.date,
     value: entry.value
-  })), { color: "#0f766e", fill: "rgba(15,118,110,0.10)", prefix: "₹" });
+  })), { color: "#0f766e", fill: "rgba(15,118,110,0.12)", accent: "#f59e0b" });
 
   const intraday = loadJsonFromSession("sureshPortfolioIntraday", []);
+  renderChartMeta(els.intradayMeta, intraday, { mode: "value", intraday: true });
   drawLineChart(els.intradayChart, intraday.map((entry) => ({
     label: new Date(entry.time * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+    fullLabel: new Date(entry.time * 1000).toLocaleString(),
     value: entry.value
-  })), { color: "#2563eb", fill: "rgba(37,99,235,0.10)", prefix: "₹" });
+  })), { color: "#2563eb", fill: "rgba(37,99,235,0.12)", accent: "#7c3aed" });
 
   const changes = history.slice(1).map((entry, index) => ({
     label: entry.date.slice(5),
+    fullLabel: entry.date,
     value: entry.value - history[index].value
   }));
+  renderChartMeta(els.dailyChangeMeta, changes, { mode: "change" });
   drawBarChart(els.dailyChangeChart, changes, { positive: "#15803d", negative: "#b91c1c" });
+}
+
+function renderChartMeta(container, data, options) {
+  if (!container) return;
+  if (!data.length) {
+    container.innerHTML = `<span>No chart data yet</span>`;
+    return;
+  }
+  const values = data.map((entry) => entry.value);
+  const latest = data.at(-1);
+  const min = data[values.indexOf(Math.min(...values))];
+  const max = data[values.indexOf(Math.max(...values))];
+  if (options.mode === "change") {
+    const positiveDays = data.filter((entry) => entry.value > 0).length;
+    container.innerHTML = `
+      <span>Latest change <strong class="${latest.value >= 0 ? "gain" : "loss"}">${latest.value >= 0 ? "+" : ""}${money(latest.value)}</strong></span>
+      <span>Worst day <strong class="loss">${money(min.value)}</strong></span>
+      <span>Best day <strong class="gain">+${money(max.value)}</strong></span>
+      <span>Positive days <strong>${positiveDays} / ${data.length}</strong></span>
+    `;
+    return;
+  }
+  const change = data.length > 1 ? latest.value - data[0].value : 0;
+  const changePct = data.length > 1 && data[0].value ? (change / data[0].value) * 100 : NaN;
+  const changeClass = change >= 0 ? "gain" : "loss";
+  const latestLabel = options.intraday && latest.time
+    ? new Date(latest.time * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    : latest.date || latest.fullLabel || latest.label || "Latest";
+  container.innerHTML = `
+    <span>Latest <strong>${money(latest.value)}</strong></span>
+    <span>Low <strong>${money(min.value)}</strong></span>
+    <span>High <strong>${money(max.value)}</strong></span>
+    <span>${latestLabel} <strong class="${changeClass}">${change >= 0 ? "+" : ""}${money(change)} ${Number.isFinite(changePct) ? `(${pct(changePct)})` : ""}</strong></span>
+  `;
 }
 
 async function fetchPublishedData() {
@@ -414,7 +458,7 @@ function drawLineChart(canvas, data, opts) {
   const { ctx, width, height } = setupCanvas(canvas);
   clearChart(ctx, width, height);
   if (data.length < 2) return drawEmpty(ctx, width, height, "More data will appear after refresh");
-  const pad = { top: 18, right: 14, bottom: 34, left: 58 };
+  const pad = { top: 24, right: 28, bottom: 42, left: 64 };
   const values = data.map((d) => d.value);
   const { min, max } = domainFor(values);
   const scale = scaleFor(values, height, pad);
@@ -440,31 +484,41 @@ function drawLineChart(canvas, data, opts) {
   ctx.strokeStyle = opts.color;
   ctx.lineWidth = 2.5;
   ctx.stroke();
+  drawPoint(ctx, x(data.length - 1), scale(data.at(-1).value), opts.accent || opts.color);
+  drawValueTag(ctx, money(data.at(-1).value, true), x(data.length - 1), scale(data.at(-1).value), opts.color, width);
   drawAxisLabels(ctx, data, width, height, pad);
+  bindChartTooltip(canvas, data.map((d, i) => ({ ...d, x: x(i), y: scale(d.value) })), { type: "line" });
 }
 
 function drawBarChart(canvas, data, opts) {
   const { ctx, width, height } = setupCanvas(canvas);
   clearChart(ctx, width, height);
   if (data.length < 1) return drawEmpty(ctx, width, height, "Daily changes will appear after refresh");
-  const pad = { top: 18, right: 14, bottom: 34, left: 58 };
+  const pad = { top: 24, right: 28, bottom: 42, left: 64 };
   const maxAbs = Math.max(...data.map((d) => Math.abs(d.value)), 1);
   const zero = pad.top + (height - pad.top - pad.bottom) / 2;
   drawGrid(ctx, width, height, pad, -maxAbs, maxAbs);
-  const gap = 3;
+  const gap = Math.max(3, Math.min(8, width / 140));
   const barWidth = Math.max(4, (width - pad.left - pad.right) / data.length - gap);
+  const hoverPoints = [];
   data.forEach((d, i) => {
     const x = pad.left + i * ((width - pad.left - pad.right) / data.length) + gap / 2;
     const barHeight = (Math.abs(d.value) / maxAbs) * ((height - pad.top - pad.bottom) / 2);
     ctx.fillStyle = d.value >= 0 ? opts.positive : opts.negative;
     ctx.fillRect(x, d.value >= 0 ? zero - barHeight : zero, barWidth, Math.max(1, barHeight));
+    hoverPoints.push({ ...d, x: x + barWidth / 2, y: d.value >= 0 ? zero - barHeight : zero + barHeight, width: barWidth });
   });
   ctx.strokeStyle = "#94a3b8";
   ctx.beginPath();
   ctx.moveTo(pad.left, zero);
   ctx.lineTo(width - pad.right, zero);
   ctx.stroke();
+  const extreme = data.reduce((winner, item) => Math.abs(item.value) > Math.abs(winner.value) ? item : winner, data[0]);
+  const extremeIndex = data.indexOf(extreme);
+  const extremePoint = hoverPoints[extremeIndex];
+  drawValueTag(ctx, `${extreme.value >= 0 ? "+" : ""}${money(extreme.value, true)}`, extremePoint.x, extremePoint.y, extreme.value >= 0 ? opts.positive : opts.negative, width);
   drawAxisLabels(ctx, data, width, height, pad);
+  bindChartTooltip(canvas, hoverPoints, { type: "bar" });
 }
 
 function clearChart(ctx, width, height) {
@@ -498,9 +552,9 @@ function domainFor(values) {
 }
 
 function drawGrid(ctx, width, height, pad, min, max) {
-  ctx.strokeStyle = "#e5ebf3";
+  ctx.strokeStyle = "#e1e8f0";
   ctx.fillStyle = "#64748b";
-  ctx.font = "12px system-ui";
+  ctx.font = "700 12px system-ui";
   ctx.textAlign = "right";
   for (let i = 0; i <= 4; i += 1) {
     const y = pad.top + (i / 4) * (height - pad.top - pad.bottom);
@@ -511,17 +565,96 @@ function drawGrid(ctx, width, height, pad, min, max) {
     ctx.stroke();
     ctx.fillText(formatAxis(value), pad.left - 8, y + 4);
   }
+  ctx.strokeStyle = "#cad5e3";
+  ctx.beginPath();
+  ctx.moveTo(pad.left, pad.top);
+  ctx.lineTo(pad.left, height - pad.bottom);
+  ctx.lineTo(width - pad.right, height - pad.bottom);
+  ctx.stroke();
 }
 
 function drawAxisLabels(ctx, data, width, height, pad) {
   ctx.fillStyle = "#64748b";
-  ctx.font = "12px system-ui";
+  ctx.font = "700 12px system-ui";
   ctx.textAlign = "center";
-  const labels = [0, Math.floor((data.length - 1) / 2), data.length - 1];
+  const labels = data.length > 12
+    ? [0, Math.floor((data.length - 1) / 4), Math.floor((data.length - 1) / 2), Math.floor((data.length - 1) * 0.75), data.length - 1]
+    : data.map((_, index) => index).filter((index) => index % Math.ceil(data.length / 6) === 0 || index === data.length - 1);
   for (const index of [...new Set(labels)]) {
     const x = pad.left + (index / Math.max(1, data.length - 1)) * (width - pad.left - pad.right);
     ctx.fillText(data[index].label, x, height - 12);
   }
+}
+
+function drawPoint(ctx, x, y, color) {
+  ctx.fillStyle = "#ffffff";
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.arc(x, y, 5, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+}
+
+function drawValueTag(ctx, text, x, y, color, width) {
+  ctx.font = "800 12px system-ui";
+  const textWidth = ctx.measureText(text).width + 16;
+  const tagX = Math.max(6, Math.min(width - textWidth - 6, x - textWidth / 2));
+  const tagY = Math.max(6, y - 30);
+  ctx.fillStyle = color;
+  roundRect(ctx, tagX, tagY, textWidth, 24, 6);
+  ctx.fill();
+  ctx.fillStyle = "#ffffff";
+  ctx.textAlign = "center";
+  ctx.fillText(text, tagX + textWidth / 2, tagY + 16);
+}
+
+function roundRect(ctx, x, y, width, height, radius) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  ctx.lineTo(x + radius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+}
+
+function bindChartTooltip(canvas, points, options) {
+  chartState.set(canvas, points);
+  if (canvas.dataset.tooltipBound) return;
+  canvas.dataset.tooltipBound = "true";
+  canvas.addEventListener("mousemove", (event) => {
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const pointsForCanvas = chartState.get(canvas) || [];
+    const nearest = pointsForCanvas.reduce((best, point) => {
+      const distance = Math.abs(point.x - x);
+      return !best || distance < best.distance ? { point, distance } : best;
+    }, null);
+    if (!nearest || nearest.distance > 28) {
+      hideChartTooltip();
+      return;
+    }
+    const label = nearest.point.fullLabel || nearest.point.label;
+    const value = `${nearest.point.value >= 0 && options.type === "bar" ? "+" : ""}${money(nearest.point.value)}`;
+    showChartTooltip(event.clientX, event.clientY, `<strong>${value}</strong><span>${label}</span>`);
+  });
+  canvas.addEventListener("mouseleave", hideChartTooltip);
+}
+
+function showChartTooltip(x, y, html) {
+  els.chartTooltip.innerHTML = html;
+  els.chartTooltip.hidden = false;
+  els.chartTooltip.style.left = `${x + 12}px`;
+  els.chartTooltip.style.top = `${y + 12}px`;
+}
+
+function hideChartTooltip() {
+  els.chartTooltip.hidden = true;
 }
 
 function formatAxis(value) {

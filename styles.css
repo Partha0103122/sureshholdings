@@ -1,6 +1,6 @@
 :root {
   color-scheme: light;
-  --bg: #f5f7fb;
+  --bg: #eef3f8;
   --ink: #111827;
   --muted: #64748b;
   --panel: #ffffff;
@@ -19,7 +19,8 @@
 body {
   margin: 0;
   min-height: 100vh;
-  background: var(--bg);
+  background:
+    linear-gradient(180deg, #f7fafc 0, #eef3f8 280px, #e9eef5 100%);
   color: var(--ink);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
@@ -68,7 +69,7 @@ main,
   justify-content: space-between;
   align-items: center;
   gap: 18px;
-  padding: 28px 0 18px;
+  padding: 28px 0 14px;
 }
 
 .app-header h1,
@@ -112,13 +113,23 @@ main,
 .tools-band {
   background: var(--panel);
   border: 1px solid var(--line);
-  box-shadow: var(--shadow);
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.07);
 }
 
 .summary-grid article {
   border-radius: 8px;
   padding: 18px;
   min-height: 130px;
+  position: relative;
+  overflow: hidden;
+}
+
+.summary-grid article::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: #0f766e;
 }
 
 .summary-grid span,
@@ -146,7 +157,7 @@ th {
 .returns-band {
   border-radius: 8px;
   margin-top: 14px;
-  padding: 12px;
+  padding: 10px;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 10px;
@@ -154,7 +165,9 @@ th {
 
 .returns-band div {
   padding: 12px;
+  background: #f8fafc;
   border-left: 3px solid #cad5e3;
+  border-radius: 6px;
 }
 
 .returns-band strong {
@@ -189,6 +202,35 @@ th {
   margin-bottom: 14px;
 }
 
+.chart-meta {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: -2px 0 12px;
+}
+
+.chart-meta span {
+  min-height: 42px;
+  border: 1px solid #dbe4ef;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: var(--muted);
+  display: grid;
+  align-content: center;
+  gap: 2px;
+  padding: 7px 9px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.chart-meta strong {
+  color: var(--ink);
+  font-size: 0.9rem;
+  line-height: 1.05;
+  text-transform: none;
+}
+
 .panel-title h2 {
   font-size: 1.1rem;
 }
@@ -203,6 +245,7 @@ canvas {
   width: 100%;
   border-radius: 6px;
   background: #fbfdff;
+  border: 1px solid #edf2f7;
 }
 
 .tools-band {
@@ -279,6 +322,24 @@ tbody tr:hover {
   white-space: nowrap;
 }
 
+.chart-tooltip {
+  position: fixed;
+  z-index: 20;
+  pointer-events: none;
+  display: grid;
+  gap: 2px;
+  border-radius: 8px;
+  background: #111827;
+  color: #ffffff;
+  padding: 9px 11px;
+  box-shadow: 0 16px 35px rgba(15, 23, 42, 0.22);
+  font-size: 0.8rem;
+}
+
+.chart-tooltip span {
+  color: #cbd5e1;
+}
+
 .toast {
   position: fixed;
   left: 50%;
@@ -307,7 +368,8 @@ tbody tr:hover {
 
   .summary-grid,
   .returns-band,
-  .charts {
+  .charts,
+  .chart-meta {
     grid-template-columns: 1fr;
   }
 
