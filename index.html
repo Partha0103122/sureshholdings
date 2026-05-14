@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0f172a">
+    <title>Suresh Holdings</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="styles.css?v=8">
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">Portfolio PWA</p>
+        <h1>Suresh Holdings</h1>
+      </div>
+      <div class="header-actions">
+        <button id="installBtn" class="ghost" hidden>Install</button>
+        <button id="refreshBtn">Refresh prices</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="summary-grid" aria-label="Portfolio summary">
+        <article>
+          <span>Portfolio value</span>
+          <strong id="portfolioValue">--</strong>
+          <small id="valueSubtitle">Waiting for prices</small>
+        </article>
+        <article>
+          <span>Portfolio P/L</span>
+          <strong id="portfolioPnl">--</strong>
+          <small>Against original transfer of ₹13,00,000</small>
+        </article>
+        <article>
+          <span>Day change</span>
+          <strong id="dayChange">--</strong>
+          <small id="dayChangeSubtitle">From prior close</small>
+        </article>
+        <article>
+          <span>Last update</span>
+          <strong id="lastUpdate">--</strong>
+          <small id="marketState">Market data is delayed/free source</small>
+        </article>
+      </section>
+
+      <section class="returns-band" aria-label="Returns">
+        <div>
+          <span>Weekly</span>
+          <strong id="weeklyReturn">--</strong>
+        </div>
+        <div>
+          <span>Monthly</span>
+          <strong id="monthlyReturn">--</strong>
+        </div>
+        <div>
+          <span>Yearly</span>
+          <strong id="yearlyReturn">--</strong>
+        </div>
+        <div>
+          <span>Since transfer</span>
+          <strong id="sinceTransferReturn">--</strong>
+        </div>
+      </section>
+
+      <section class="charts">
+        <article class="chart-panel wide">
+          <div class="panel-title">
+            <div>
+              <h2>Historical portfolio value</h2>
+              <p>Daily close from April 1. Dates with incomplete quote data are skipped.</p>
+            </div>
+            <select id="historyRange" aria-label="Historical range">
+              <option value="all">Since Apr 1</option>
+              <option value="30">30 days</option>
+              <option value="7">7 days</option>
+            </select>
+          </div>
+          <div id="historyMeta" class="chart-meta"></div>
+          <canvas id="historyChart" height="260" aria-label="Historical portfolio value chart"></canvas>
+        </article>
+
+        <article class="chart-panel">
+          <div class="panel-title">
+            <div>
+              <h2>Intraday movement</h2>
+              <p>5 minute candles with last known prices carried forward across holdings.</p>
+            </div>
+          </div>
+          <div id="intradayMeta" class="chart-meta"></div>
+          <canvas id="intradayChart" height="230" aria-label="Intraday portfolio value chart"></canvas>
+        </article>
+
+        <article class="chart-panel">
+          <div class="panel-title">
+            <div>
+              <h2>Daily value change</h2>
+              <p>Change versus the previous stored trading day.</p>
+            </div>
+          </div>
+          <div id="dailyChangeMeta" class="chart-meta"></div>
+          <canvas id="dailyChangeChart" height="230" aria-label="Daily change chart"></canvas>
+        </article>
+
+        <article class="chart-panel">
+          <div class="panel-title">
+            <div>
+              <h2>Total value change</h2>
+              <p>Portfolio value minus the original transfer amount.</p>
+            </div>
+          </div>
+          <div id="totalChangeMeta" class="chart-meta"></div>
+          <canvas id="totalChangeChart" height="230" aria-label="Total value change chart"></canvas>
+        </article>
+
+        <article class="chart-panel allocation-panel">
+          <div class="panel-title">
+            <div>
+              <h2>Weightage distribution</h2>
+              <p>Current allocation by holding value.</p>
+            </div>
+          </div>
+          <div class="allocation-layout">
+            <canvas id="allocationChart" height="230" aria-label="Weightage distribution donut chart"></canvas>
+            <div id="allocationLegend" class="allocation-legend"></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="tools-band">
+        <label>
+          Invested amount
+          <input id="investedInput" type="number" min="0" step="1000">
+        </label>
+        <label>
+          History starts
+          <input id="startDateInput" type="date">
+        </label>
+        <label>
+          Cash balance
+          <input id="cashInput" type="number" min="0" step="100">
+        </label>
+        <button id="exportBtn" class="ghost">Export data</button>
+        <label class="file-button">
+          Import data
+          <input id="importInput" type="file" accept="application/json">
+        </label>
+      </section>
+
+      <section class="holdings-section">
+        <div class="panel-title">
+          <div>
+            <h2>Holdings</h2>
+            <p>Edit quantity or average cost after a buy/sell. Past history remains unchanged; today onward uses the latest table.</p>
+          </div>
+          <span id="dataSource" class="status-pill">Offline seed</span>
+        </div>
+        <form id="addHoldingForm" class="add-holding">
+          <input id="addSymbol" placeholder="Symbol" aria-label="New symbol">
+          <input id="addYahoo" placeholder="Yahoo code, e.g. TCS.NS" aria-label="Yahoo Finance code">
+          <input id="addQty" type="number" min="0" step="1" placeholder="Qty" aria-label="New quantity">
+          <input id="addAvgCost" type="number" min="0" step="0.01" placeholder="Avg cost" aria-label="New average cost">
+          <button type="submit">Add holding</button>
+        </form>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th><button class="sort-btn" data-sort="symbol" type="button">Symbol</button></th>
+                <th><button class="sort-btn" data-sort="qty" type="button">Qty</button></th>
+                <th><button class="sort-btn" data-sort="avgCost" type="button">Avg cost</button></th>
+                <th><button class="sort-btn" data-sort="price" type="button">Price</button></th>
+                <th><button class="sort-btn" data-sort="dayChange" type="button">Day change</button></th>
+                <th><button class="sort-btn" data-sort="current" type="button">Current</button></th>
+                <th><button class="sort-btn" data-sort="pnl" type="button">P/L</button></th>
+                <th><button class="sort-btn" data-sort="weight" type="button">Weight</button></th>
+                <th>Trade</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="holdingsBody"></tbody>
+          </table>
+        </div>
+        <div id="holdingsCards" class="holdings-cards"></div>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <div id="chartTooltip" class="chart-tooltip" hidden></div>
+
+    <script src="app.js?v=14"></script>
+  </body>
+</html>
