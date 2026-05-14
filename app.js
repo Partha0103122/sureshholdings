@@ -330,7 +330,9 @@ async function fetchQuotes() {
     const closes = result?.indicators?.quote?.[0]?.close || [];
     const validCloses = closes.filter(Number.isFinite);
     const price = Number.isFinite(meta.regularMarketPrice) ? meta.regularMarketPrice : validCloses.at(-1);
-    const previousClose = Number.isFinite(meta.chartPreviousClose) ? meta.chartPreviousClose : validCloses.at(-2) || price;
+    const previousClose = validCloses.length > 1
+      ? validCloses.at(-2)
+      : Number.isFinite(meta.chartPreviousClose) ? meta.chartPreviousClose : price;
     if (!Number.isFinite(price)) return;
     state.quotes[holding.symbol] = {
       price,
