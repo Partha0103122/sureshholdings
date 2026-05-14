@@ -7,7 +7,7 @@
     <title>Suresh Holdings</title>
     <link rel="manifest" href="manifest.webmanifest">
     <link rel="icon" href="icon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="styles.css?v=8">
+    <link rel="stylesheet" href="styles.css?v=9">
   </head>
   <body>
     <header class="app-header">
@@ -62,6 +62,12 @@
           <span>Since transfer</span>
           <strong id="sinceTransferReturn">--</strong>
         </div>
+      </section>
+
+      <section id="dataNotice" class="data-notice" hidden>
+        <strong id="dataNoticeTitle">Market data needs update</strong>
+        <span id="dataNoticeText">Run the GitHub Action to refresh prices.</span>
+        <a id="actionsLink" href="https://github.com/Partha0103122/sureshholdings/actions/workflows/update-portfolio-data.yml" target="_blank" rel="noreferrer">Open updater</a>
       </section>
 
       <section class="charts">
@@ -183,11 +189,12 @@
           </table>
         </div>
       </section>
+
     </main>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
     <div id="chartTooltip" class="chart-tooltip" hidden></div>
 
-    <script src="app.js?v=16"></script>
+    <script src="app.js?v=17"></script>
   </body>
 </html>

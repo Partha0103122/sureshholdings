@@ -213,6 +213,31 @@ th {
   font-size: 1.25rem;
 }
 
+.data-notice {
+  margin-top: 14px;
+  border: 1px solid #facc15;
+  border-left: 5px solid #ca8a04;
+  border-radius: 8px;
+  background: #fffbeb;
+  color: #713f12;
+  padding: 13px 15px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: center;
+  box-shadow: 0 8px 22px rgba(146, 64, 14, 0.08);
+}
+
+.data-notice[hidden] {
+  display: none;
+}
+
+.data-notice a {
+  color: #064e3b;
+  font-weight: 900;
+  text-decoration: none;
+}
+
 .charts {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -527,6 +552,10 @@ tbody tr:hover {
   .returns-band div {
     border-left: 0;
     border-top: 3px solid #cad5e3;
+  }
+
+  .data-notice {
+    grid-template-columns: 1fr;
   }
 
   .tools-band,

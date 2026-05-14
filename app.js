@@ -40,6 +40,9 @@ const els = {
   monthlyReturn: document.querySelector("#monthlyReturn"),
   yearlyReturn: document.querySelector("#yearlyReturn"),
   sinceTransferReturn: document.querySelector("#sinceTransferReturn"),
+  dataNotice: document.querySelector("#dataNotice"),
+  dataNoticeTitle: document.querySelector("#dataNoticeTitle"),
+  dataNoticeText: document.querySelector("#dataNoticeText"),
   historyChart: document.querySelector("#historyChart"),
   intradayChart: document.querySelector("#intradayChart"),
   dailyChangeChart: document.querySelector("#dailyChangeChart"),
@@ -212,6 +215,7 @@ function render() {
     ? `Quote feed time: ${new Date(latestQuote * 1000).toLocaleString()}`
     : latestHistory ? `Saved history through ${latestHistory.date}` : "No saved history yet";
   els.dataSource.textContent = latestQuote ? "Yahoo Finance" : "Offline seed";
+  renderDataNotice(latestQuote, latestHistory);
 
   renderReturnCards(value, invested);
   renderHoldings(value);
@@ -291,30 +295,31 @@ function compareHoldingRows(a, b) {
 
 async function refreshAll() {
   els.refreshBtn.disabled = true;
-  els.refreshBtn.textContent = "Refreshing...";
+  els.refreshBtn.textContent = "Checking data...";
   try {
     const publishedDataLoaded = await fetchPublishedData();
-    const tasks = hasCustomPortfolio()
-      ? [fetchQuotes(), fetchIntradayPortfolio()]
-      : [fetchQuotes(), fetchHistoricalPortfolio(), fetchIntradayPortfolio()];
-    const results = await Promise.allSettled(tasks);
-    const failed = results.filter((result) => result.status === "rejected");
-    const succeeded = results.length - failed.length;
-    if (succeeded > 0) {
-      state.lastRefresh = new Date().toISOString();
-      snapshotToday();
-      toast(failed.length ? "Portfolio updated; some chart data could not refresh" : "Portfolio updated with live data");
-    } else if (publishedDataLoaded) {
-      toast("Loaded Git data; live market refresh was unavailable");
+    if (publishedDataLoaded) {
+      toast("Loaded latest Git data. Run updater if values are stale.");
     } else {
-      console.warn("Some market-data refreshes failed", failed.map((result) => result.reason));
-      toast("Some live data could not be reached; saved seed data is still shown");
+      toast("Could not load Git market data");
     }
   } finally {
     els.refreshBtn.disabled = false;
     els.refreshBtn.textContent = "Refresh prices";
     render();
   }
+}
+
+function renderDataNotice(latestQuote, latestHistory) {
+  const latestQuoteMs = latestQuote ? latestQuote * 1000 : 0;
+  const latestHistoryDate = latestHistory?.date;
+  const ageHours = latestQuoteMs ? (Date.now() - latestQuoteMs) / 36e5 : Infinity;
+  const stale = ageHours > 18 || (latestHistoryDate && latestHistoryDate < todayKey());
+  els.dataNotice.hidden = !stale;
+  if (!stale) return;
+  const quoteText = latestQuoteMs ? new Date(latestQuoteMs).toLocaleString() : "not available";
+  els.dataNoticeTitle.textContent = "Market data looks stale";
+  els.dataNoticeText.textContent = `Latest quote time is ${quoteText}. Open the updater and run the workflow to refresh today's values.`;
 }
 
 async function fetchQuotes() {

@@ -2,6 +2,12 @@ name: Update portfolio data
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - scripts/update-data.js
+      - .github/workflows/update-portfolio-data.yml
   schedule:
     - cron: "*/15 3-10 * * 1-5"
     - cron: "30 11 * * 1-5"
