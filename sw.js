@@ -1,4 +1,4 @@
-const CACHE_NAME = "suresh-holdings-v18";
+const CACHE_NAME = "suresh-holdings-v19";
 const APP_ASSETS = [
   "./",
   "./index.html",

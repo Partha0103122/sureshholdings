@@ -253,8 +253,29 @@ function renderHoldings(totalValue) {
     index,
     metrics: holdingMetrics(holding, totalValue)
   })).sort((a, b) => compareHoldingRows(a, b));
+  const totals = rows.reduce((acc, row) => {
+    acc.dayChange += row.metrics.dayChange;
+    acc.current += row.metrics.value;
+    acc.pnl += row.metrics.pnl;
+    acc.weight += row.metrics.weight;
+    return acc;
+  }, { dayChange: 0, current: cashBalance(), pnl: totalValue - (Number(state.config.investedAmount) || INVESTED_DEFAULT), weight: 0 });
+  const totalsRow = `
+    <tr class="totals-row">
+      <td><strong>Total</strong></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td class="${totals.dayChange >= 0 ? "gain" : "loss"}">${totals.dayChange >= 0 ? "+" : ""}${money(totals.dayChange)}</td>
+      <td>${money(totalValue)}</td>
+      <td class="${totals.pnl >= 0 ? "gain" : "loss"}">${totals.pnl >= 0 ? "+" : ""}${money(totals.pnl)}</td>
+      <td>100.0%</td>
+      <td></td>
+      <td></td>
+    </tr>
+  `;
 
-  els.holdingsBody.innerHTML = rows.map(({ holding, index, metrics }) => {
+  els.holdingsBody.innerHTML = totalsRow + rows.map(({ holding, index, metrics }) => {
     const { quote, price, value, pnl, dayChange, dayChangePct, weight } = metrics;
     return `
       <tr data-index="${index}">
