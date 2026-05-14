@@ -683,7 +683,7 @@ function drawDonutChart(canvas, data) {
   ctx.fillText(money(total, true), cx, cy - 4);
   ctx.fillStyle = "#64748b";
   ctx.font = "700 12px system-ui";
-  ctx.fillText("Invested", cx, cy + 16);
+  ctx.fillText("Current", cx, cy + 16);
   bindChartTooltip(canvas, hoverPoints, { type: "donut" });
 }
 
