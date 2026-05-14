@@ -385,10 +385,6 @@ select {
   overflow-x: auto;
 }
 
-.holdings-cards {
-  display: none;
-}
-
 table {
   width: 100%;
   border-collapse: collapse;
@@ -595,85 +591,20 @@ tbody tr:hover {
   }
 
   .table-wrap {
-    display: none;
+    display: block;
+    margin-inline: -4px;
+    padding-bottom: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
-  .holdings-cards {
-    display: grid;
-    gap: 12px;
+  table {
+    min-width: 1180px;
   }
 
-  .holding-card {
-    border: 1px solid #dbe4ef;
-    border-radius: 8px;
-    background: #ffffff;
-    padding: 13px;
-    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
-  }
-
-  .holding-card-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-
-  .holding-card-head strong {
-    font-size: 1.1rem;
-  }
-
-  .holding-card-head span {
-    border-radius: 999px;
-    background: #e7eef7;
-    color: #16324f;
-    padding: 5px 9px;
-    font-weight: 800;
-  }
-
-  .holding-card dl {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin: 0;
-  }
-
-  .holding-card dl div {
-    display: grid;
-    gap: 4px;
-    min-width: 0;
-  }
-
-  .holding-card dt {
-    color: var(--muted);
-    font-size: 0.72rem;
-    font-weight: 800;
-    text-transform: uppercase;
-  }
-
-  .holding-card dd {
-    margin: 0;
-    font-weight: 800;
-    min-width: 0;
-  }
-
-  .holding-card .table-input,
-  .holding-card .trade-input {
-    width: 100%;
-  }
-
-  .mobile-trade,
-  .mobile-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-top: 10px;
-  }
-
-  .mobile-trade .mini-btn,
-  .mobile-actions .mini-btn {
-    width: 100%;
-    justify-content: center;
+  th,
+  td {
+    padding: 10px 8px;
   }
 }
 
@@ -701,9 +632,4 @@ tbody tr:hover {
     padding: 10px;
   }
 
-  .holding-card dl,
-  .mobile-trade,
-  .mobile-actions {
-    grid-template-columns: 1fr;
-  }
 }

@@ -52,7 +52,6 @@ const els = {
   allocationLegend: document.querySelector("#allocationLegend"),
   chartTooltip: document.querySelector("#chartTooltip"),
   holdingsBody: document.querySelector("#holdingsBody"),
-  holdingsCards: document.querySelector("#holdingsCards"),
   dataSource: document.querySelector("#dataSource"),
   refreshBtn: document.querySelector("#refreshBtn"),
   installBtn: document.querySelector("#installBtn"),
@@ -274,35 +273,6 @@ function renderHoldings(totalValue) {
           <button class="mini-btn danger" data-action="remove" data-index="${index}" type="button">Remove</button>
         </td>
       </tr>
-    `;
-  }).join("");
-  els.holdingsCards.innerHTML = rows.map(({ holding, index, metrics }) => {
-    const { price, value, pnl, dayChange, dayChangePct, weight } = metrics;
-    return `
-      <article class="holding-card" data-index="${index}" data-mobile-card="true">
-        <div class="holding-card-head">
-          <strong>${holding.symbol}</strong>
-          <span>${weight.toFixed(1)}%</span>
-        </div>
-        <dl>
-          <div><dt>Qty</dt><dd><input class="table-input" data-field="qty" data-index="${index}" type="number" min="0" step="1" value="${holding.qty}"></dd></div>
-          <div><dt>Avg cost</dt><dd><input class="table-input" data-field="avgCost" data-index="${index}" type="number" min="0" step="0.01" value="${holding.avgCost}"></dd></div>
-          <div><dt>Price</dt><dd>${money(price)}</dd></div>
-          <div><dt>Day</dt><dd class="${dayChange >= 0 ? "gain" : "loss"}">${dayChange >= 0 ? "+" : ""}${money(dayChange)} ${pct(dayChangePct)}</dd></div>
-          <div><dt>Current</dt><dd>${money(value)}</dd></div>
-          <div><dt>P/L</dt><dd class="${pnl >= 0 ? "gain" : "loss"}">${pnl >= 0 ? "+" : ""}${money(pnl)}</dd></div>
-        </dl>
-        <div class="mobile-trade">
-          <input class="trade-input" data-field="tradeQty" data-index="${index}" type="number" min="0" step="1" placeholder="Qty">
-          <input class="trade-input" data-field="tradePrice" data-index="${index}" type="number" min="0" step="0.01" placeholder="Price">
-          <button class="mini-btn" data-action="buy" data-index="${index}" type="button">Buy</button>
-          <button class="mini-btn danger" data-action="sell" data-index="${index}" type="button">Sell</button>
-        </div>
-        <div class="mobile-actions">
-          <button class="mini-btn" data-action="save" data-index="${index}" type="button">Save changes</button>
-          <button class="mini-btn danger" data-action="remove" data-index="${index}" type="button">Remove</button>
-        </div>
-      </article>
     `;
   }).join("");
 }
@@ -878,7 +848,6 @@ function toast(message) {
 
 function saveHoldingRow(index, source) {
   const row = source
-    || els.holdingsCards.querySelector(`[data-index="${index}"]`)
     || els.holdingsBody.querySelector(`tr[data-index="${index}"]`);
   if (!row || !holdings[index]) return;
   const qty = Number(row.querySelector('[data-field="qty"]')?.value);
@@ -907,7 +876,6 @@ function removeHolding(index) {
 function applyTrade(index, action, source) {
   const holding = holdings[index];
   const row = source
-    || els.holdingsCards.querySelector(`[data-index="${index}"]`)
     || els.holdingsBody.querySelector(`tr[data-index="${index}"]`);
   if (!holding || !row) return;
   const qty = Number(row.querySelector('[data-field="tradeQty"]')?.value);
@@ -1010,13 +978,7 @@ function setupEvents() {
   els.holdingsBody.addEventListener("click", (event) => {
     handleHoldingAction(event);
   });
-  els.holdingsCards.addEventListener("click", (event) => {
-    handleHoldingAction(event);
-  });
   els.holdingsBody.addEventListener("keydown", (event) => {
-    handleHoldingEnter(event);
-  });
-  els.holdingsCards.addEventListener("keydown", (event) => {
     handleHoldingEnter(event);
   });
   els.addHoldingForm.addEventListener("submit", (event) => {
