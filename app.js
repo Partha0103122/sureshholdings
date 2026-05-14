@@ -294,26 +294,22 @@ async function refreshAll() {
   els.refreshBtn.textContent = "Refreshing...";
   try {
     const publishedDataLoaded = await fetchPublishedData();
-    if (publishedDataLoaded && !hasCustomPortfolio()) {
-      state.lastRefresh = new Date().toISOString();
-      snapshotToday();
-      toast("Portfolio updated from Git data");
-      return;
-    }
-
     const tasks = hasCustomPortfolio()
       ? [fetchQuotes(), fetchIntradayPortfolio()]
       : [fetchQuotes(), fetchHistoricalPortfolio(), fetchIntradayPortfolio()];
     const results = await Promise.allSettled(tasks);
     const failed = results.filter((result) => result.status === "rejected");
-    if (failed.length) {
+    const succeeded = results.length - failed.length;
+    if (succeeded > 0) {
+      state.lastRefresh = new Date().toISOString();
+      snapshotToday();
+      toast(failed.length ? "Portfolio updated; some chart data could not refresh" : "Portfolio updated with live data");
+    } else if (publishedDataLoaded) {
+      toast("Loaded Git data; live market refresh was unavailable");
+    } else {
       console.warn("Some market-data refreshes failed", failed.map((result) => result.reason));
       toast("Some live data could not be reached; saved seed data is still shown");
-    } else {
-      toast("Portfolio updated");
     }
-    state.lastRefresh = new Date().toISOString();
-    snapshotToday();
   } finally {
     els.refreshBtn.disabled = false;
     els.refreshBtn.textContent = "Refresh prices";
