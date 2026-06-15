@@ -1,101 +1,101 @@
 {
-  "refreshedAt": "2026-06-12T14:20:53.051Z",
+  "refreshedAt": "2026-06-15T09:26:34.401Z",
   "source": "Yahoo Finance via GitHub Actions",
   "quotes": {
     "M&MFIN": {
-      "price": 291.05,
-      "previousClose": 275.70001220703125,
-      "regularMarketTime": 1781258399,
+      "price": 300.15,
+      "previousClose": 291.04998779296875,
+      "regularMarketTime": 1781515588,
       "source": "Yahoo Finance"
     },
     "VGUARD": {
-      "price": 299.15,
-      "previousClose": 293.45001220703125,
-      "regularMarketTime": 1781258400,
+      "price": 303.3,
+      "previousClose": 299.1499938964844,
+      "regularMarketTime": 1781515591,
       "source": "Yahoo Finance"
     },
     "INDHOTEL": {
-      "price": 679.45,
-      "previousClose": 655.7000122070312,
-      "regularMarketTime": 1781258400,
+      "price": 692.25,
+      "previousClose": 679.4500122070312,
+      "regularMarketTime": 1781515590,
       "source": "Yahoo Finance"
     },
     "WABAG": {
-      "price": 1577.8,
-      "previousClose": 1524,
-      "regularMarketTime": 1781258401,
+      "price": 1634.3,
+      "previousClose": 1577.800048828125,
+      "regularMarketTime": 1781515583,
       "source": "Yahoo Finance"
     },
     "HDFCBANK": {
-      "price": 772.45,
-      "previousClose": 744.5999755859375,
-      "regularMarketTime": 1781258400,
+      "price": 779.5,
+      "previousClose": 772.4500122070312,
+      "regularMarketTime": 1781515592,
       "source": "Yahoo Finance"
     },
     "DABUR": {
-      "price": 426.4,
-      "previousClose": 421.70001220703125,
-      "regularMarketTime": 1781258401,
+      "price": 430.25,
+      "previousClose": 426.3999938964844,
+      "regularMarketTime": 1781515590,
       "source": "Yahoo Finance"
     },
     "WONDERLA": {
-      "price": 478.25,
-      "previousClose": 465.6000061035156,
-      "regularMarketTime": 1781258401,
+      "price": 484.35,
+      "previousClose": 478.25,
+      "regularMarketTime": 1781515398,
       "source": "Yahoo Finance"
     },
     "PVRINOX": {
-      "price": 943.5,
-      "previousClose": 945.1500244140625,
-      "regularMarketTime": 1781258398,
+      "price": 945.35,
+      "previousClose": 943.5,
+      "regularMarketTime": 1781515588,
       "source": "Yahoo Finance"
     },
     "AHLUCONT": {
-      "price": 798.1,
-      "previousClose": 785.8499755859375,
-      "regularMarketTime": 1781258403,
+      "price": 809,
+      "previousClose": 798.0999755859375,
+      "regularMarketTime": 1781515585,
       "source": "Yahoo Finance"
     },
     "AXISBANK": {
-      "price": 1356.3,
-      "previousClose": 1317.300048828125,
-      "regularMarketTime": 1781258399,
+      "price": 1368.5,
+      "previousClose": 1356.300048828125,
+      "regularMarketTime": 1781515592,
       "source": "Yahoo Finance"
     },
     "RELIANCE": {
-      "price": 1293,
-      "previousClose": 1263,
-      "regularMarketTime": 1781258400,
+      "price": 1307.2,
+      "previousClose": 1293,
+      "regularMarketTime": 1781515592,
       "source": "Yahoo Finance"
     },
     "ICICIBANK": {
-      "price": 1340.8,
-      "previousClose": 1317,
-      "regularMarketTime": 1781258397,
+      "price": 1332,
+      "previousClose": 1340.800048828125,
+      "regularMarketTime": 1781515592,
       "source": "Yahoo Finance"
     },
     "BHARTIARTL": {
-      "price": 1822.5,
-      "previousClose": 1782.5999755859375,
-      "regularMarketTime": 1781258399,
+      "price": 1846.2,
+      "previousClose": 1822.5,
+      "regularMarketTime": 1781515593,
       "source": "Yahoo Finance"
     },
     "M&M": {
-      "price": 3042.9,
-      "previousClose": 3000.89990234375,
-      "regularMarketTime": 1781258400,
+      "price": 3145.6,
+      "previousClose": 3042.89990234375,
+      "regularMarketTime": 1781515592,
       "source": "Yahoo Finance"
     },
     "LT": {
-      "price": 4049.3,
-      "previousClose": 3862,
-      "regularMarketTime": 1781258400,
+      "price": 4169,
+      "previousClose": 4049.300048828125,
+      "regularMarketTime": 1781515592,
       "source": "Yahoo Finance"
     },
     "INDIGO": {
-      "price": 4709.7,
-      "previousClose": 4502.39990234375,
-      "regularMarketTime": 1781258400,
+      "price": 4892.5,
+      "previousClose": 4709.7001953125,
+      "regularMarketTime": 1781515592,
       "source": "Yahoo Finance"
     }
   },
@@ -104,607 +104,617 @@
       "date": "2026-04-01",
       "value": 1158058.44,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.049Z"
+      "savedAt": "2026-06-15T09:26:34.380Z"
     },
     {
       "date": "2026-04-02",
       "value": 1160597.7,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.049Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-04-06",
       "value": 1172668.75,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.049Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-04-07",
       "value": 1175005.66,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.049Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-04-08",
       "value": 1234735.54,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.049Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-04-09",
       "value": 1220043.65,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.049Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-04-10",
       "value": 1241206.35,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.049Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-04-13",
       "value": 1230118.61,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.049Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-04-15",
       "value": 1251411.86,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.049Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-04-16",
       "value": 1259670.55,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.049Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-04-17",
       "value": 1256330.35,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.049Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-04-20",
       "value": 1260046.01,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.049Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-04-21",
       "value": 1281951.61,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.049Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-04-22",
       "value": 1275560.46,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.049Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-04-23",
       "value": 1262617.3,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.049Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-04-24",
       "value": 1258274.66,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.049Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-04-27",
       "value": 1271963.15,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.049Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-04-28",
       "value": 1271461.35,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.049Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-04-29",
       "value": 1277008.88,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.049Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-04-30",
       "value": 1266079.56,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.049Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-05-04",
       "value": 1267094.29,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-05-05",
       "value": 1264483.64,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-05-06",
       "value": 1286062.76,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-05-07",
       "value": 1288076.69,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-05-08",
       "value": 1283644.05,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-05-11",
       "value": 1256522.8,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-05-12",
       "value": 1223771.71,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-05-13",
       "value": 1225146.35,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-05-14",
       "value": 1237533,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-05-15",
       "value": 1233711.2,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-05-18",
       "value": 1228851.91,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-05-19",
       "value": 1228114.49,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-05-20",
       "value": 1227668.09,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-05-21",
       "value": 1227128.21,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-05-22",
       "value": 1231697.5,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-05-25",
       "value": 1249314.95,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-05-26",
       "value": 1250640.77,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-05-27",
       "value": 1258847.71,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-05-28",
       "value": 1258847.71,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-05-29",
       "value": 1239392.1,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-06-01",
       "value": 1231468.3,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-06-02",
       "value": 1235743.75,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-06-03",
       "value": 1233580.5,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.381Z"
     },
     {
       "date": "2026-06-04",
       "value": 1235160.49,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.382Z"
     },
     {
       "date": "2026-06-05",
       "value": 1241563.15,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.382Z"
     },
     {
       "date": "2026-06-08",
       "value": 1218702.57,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.382Z"
     },
     {
       "date": "2026-06-09",
       "value": 1236431.01,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.382Z"
     },
     {
       "date": "2026-06-10",
       "value": 1227305.49,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.382Z"
     },
     {
       "date": "2026-06-11",
       "value": 1219353.65,
       "source": "Yahoo daily close",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.382Z"
     },
     {
       "date": "2026-06-12",
-      "value": 1255921.45,
+      "value": 1255921.46,
+      "source": "Yahoo daily close",
+      "savedAt": "2026-06-15T09:26:34.382Z"
+    },
+    {
+      "date": "2026-06-15",
+      "value": 1282225.45,
       "source": "Yahoo current quote",
-      "savedAt": "2026-06-12T14:20:53.050Z"
+      "savedAt": "2026-06-15T09:26:34.382Z"
     }
   ],
   "intraday": [
     {
-      "time": 1781235900,
-      "value": 1239839.24
+      "time": 1781495100,
+      "value": 1282792.69
     },
     {
-      "time": 1781236200,
-      "value": 1238396.24
+      "time": 1781495400,
+      "value": 1283365.05
     },
     {
-      "time": 1781236500,
-      "value": 1236740.45
+      "time": 1781495700,
+      "value": 1283958.7
     },
     {
-      "time": 1781236800,
-      "value": 1237032.29
+      "time": 1781496000,
+      "value": 1283901.6
     },
     {
-      "time": 1781237100,
-      "value": 1236654.21
+      "time": 1781496300,
+      "value": 1285069.99
     },
     {
-      "time": 1781237400,
-      "value": 1234069.3
+      "time": 1781496600,
+      "value": 1286496.74
     },
     {
-      "time": 1781237700,
-      "value": 1235045.7
+      "time": 1781496900,
+      "value": 1287466.65
     },
     {
-      "time": 1781238000,
-      "value": 1233955.76
+      "time": 1781497200,
+      "value": 1287286.76
     },
     {
-      "time": 1781238300,
-      "value": 1233054.1
+      "time": 1781497500,
+      "value": 1287436.85
     },
     {
-      "time": 1781238600,
-      "value": 1232154.96
+      "time": 1781497800,
+      "value": 1289042.96
     },
     {
-      "time": 1781238900,
-      "value": 1233679.6
+      "time": 1781498100,
+      "value": 1287891.99
     },
     {
-      "time": 1781239200,
-      "value": 1233511.5
+      "time": 1781498400,
+      "value": 1287768.35
     },
     {
-      "time": 1781239500,
-      "value": 1232948.64
+      "time": 1781498700,
+      "value": 1288741.85
     },
     {
-      "time": 1781239800,
-      "value": 1234304.56
+      "time": 1781499000,
+      "value": 1288889.21
     },
     {
-      "time": 1781240100,
-      "value": 1234788.6
+      "time": 1781499300,
+      "value": 1289170.94
     },
     {
-      "time": 1781240400,
-      "value": 1234731.94
+      "time": 1781499600,
+      "value": 1289911.56
     },
     {
-      "time": 1781240700,
-      "value": 1234561.69
+      "time": 1781499900,
+      "value": 1289793.55
     },
     {
-      "time": 1781241000,
-      "value": 1234980.09
+      "time": 1781500200,
+      "value": 1288538.69
     },
     {
-      "time": 1781241300,
-      "value": 1233986.85
+      "time": 1781500500,
+      "value": 1288932.59
     },
     {
-      "time": 1781241600,
-      "value": 1234834.5
+      "time": 1781500800,
+      "value": 1288253.45
     },
     {
-      "time": 1781241900,
-      "value": 1235735.59
+      "time": 1781501100,
+      "value": 1288932.19
     },
     {
-      "time": 1781242200,
-      "value": 1235130.45
+      "time": 1781501400,
+      "value": 1287971.04
     },
     {
-      "time": 1781242500,
-      "value": 1234794.8
+      "time": 1781501700,
+      "value": 1287839.95
     },
     {
-      "time": 1781242800,
-      "value": 1235982.5
+      "time": 1781502000,
+      "value": 1286925.44
     },
     {
-      "time": 1781243100,
-      "value": 1235658.05
+      "time": 1781502300,
+      "value": 1287255.5
     },
     {
-      "time": 1781243400,
-      "value": 1235375.4
+      "time": 1781502600,
+      "value": 1286892.89
     },
     {
-      "time": 1781243700,
-      "value": 1234981.35
+      "time": 1781502900,
+      "value": 1286942.37
     },
     {
-      "time": 1781244000,
-      "value": 1235496.95
+      "time": 1781503200,
+      "value": 1286426.86
     },
     {
-      "time": 1781244300,
-      "value": 1236041.4
+      "time": 1781503500,
+      "value": 1286411.31
     },
     {
-      "time": 1781244600,
-      "value": 1236610.55
+      "time": 1781503800,
+      "value": 1286968.92
     },
     {
-      "time": 1781244900,
-      "value": 1237352.2
+      "time": 1781504100,
+      "value": 1286444.44
     },
     {
-      "time": 1781245200,
-      "value": 1236709.6
+      "time": 1781504400,
+      "value": 1286783.06
     },
     {
-      "time": 1781245500,
-      "value": 1236970.71
+      "time": 1781504700,
+      "value": 1286674.55
     },
     {
-      "time": 1781245800,
-      "value": 1236727.61
+      "time": 1781505000,
+      "value": 1285767
     },
     {
-      "time": 1781246100,
-      "value": 1236028.62
+      "time": 1781505300,
+      "value": 1284655.69
     },
     {
-      "time": 1781246400,
-      "value": 1235372.1
+      "time": 1781505600,
+      "value": 1284744.55
     },
     {
-      "time": 1781246700,
-      "value": 1234831.5
+      "time": 1781505900,
+      "value": 1283282.4
     },
     {
-      "time": 1781247000,
-      "value": 1235860.95
+      "time": 1781506200,
+      "value": 1283803.95
     },
     {
-      "time": 1781247300,
-      "value": 1236050.14
+      "time": 1781506500,
+      "value": 1283267.84
     },
     {
-      "time": 1781247600,
-      "value": 1235278.16
+      "time": 1781506800,
+      "value": 1283962.09
     },
     {
-      "time": 1781247900,
-      "value": 1234955.8
+      "time": 1781507100,
+      "value": 1284713.42
     },
     {
-      "time": 1781248200,
-      "value": 1234308.2
+      "time": 1781507400,
+      "value": 1285233.9
     },
     {
-      "time": 1781248500,
-      "value": 1233844.26
+      "time": 1781507700,
+      "value": 1284944.15
     },
     {
-      "time": 1781248800,
-      "value": 1234437.06
+      "time": 1781508000,
+      "value": 1285669.8
     },
     {
-      "time": 1781249100,
-      "value": 1233801.69
+      "time": 1781508300,
+      "value": 1285606.84
     },
     {
-      "time": 1781249400,
-      "value": 1234656.2
+      "time": 1781508600,
+      "value": 1285476.5
     },
     {
-      "time": 1781249700,
-      "value": 1234740.54
+      "time": 1781508900,
+      "value": 1285397.45
     },
     {
-      "time": 1781250000,
-      "value": 1234476.24
+      "time": 1781509200,
+      "value": 1285694.6
     },
     {
-      "time": 1781250300,
-      "value": 1234608.29
+      "time": 1781509500,
+      "value": 1284092.69
     },
     {
-      "time": 1781250600,
-      "value": 1234119.76
+      "time": 1781509800,
+      "value": 1284173.44
     },
     {
-      "time": 1781250900,
-      "value": 1236695.71
+      "time": 1781510100,
+      "value": 1283947.46
     },
     {
-      "time": 1781251200,
-      "value": 1238157.1
+      "time": 1781510400,
+      "value": 1283322.39
     },
     {
-      "time": 1781251500,
-      "value": 1240808.09
+      "time": 1781510700,
+      "value": 1283358.6
     },
     {
-      "time": 1781251800,
-      "value": 1242439.54
+      "time": 1781511000,
+      "value": 1282935.55
     },
     {
-      "time": 1781252100,
-      "value": 1243658
+      "time": 1781511300,
+      "value": 1283215.3
     },
     {
-      "time": 1781252400,
-      "value": 1243028.75
+      "time": 1781511600,
+      "value": 1282815.65
     },
     {
-      "time": 1781252700,
-      "value": 1245730.25
+      "time": 1781511900,
+      "value": 1283479.15
     },
     {
-      "time": 1781253000,
-      "value": 1245292.19
+      "time": 1781512200,
+      "value": 1282844.96
     },
     {
-      "time": 1781253300,
-      "value": 1245642.7
+      "time": 1781512500,
+      "value": 1281996.4
     },
     {
-      "time": 1781253600,
-      "value": 1247104.5
+      "time": 1781512800,
+      "value": 1282276.3
     },
     {
-      "time": 1781253900,
-      "value": 1248263.59
+      "time": 1781513100,
+      "value": 1282273.19
     },
     {
-      "time": 1781254200,
-      "value": 1248903.16
+      "time": 1781513400,
+      "value": 1282542.66
     },
     {
-      "time": 1781254500,
-      "value": 1250310.11
+      "time": 1781513700,
+      "value": 1282243.5
     },
     {
-      "time": 1781254800,
-      "value": 1250846.29
+      "time": 1781514000,
+      "value": 1283282.14
     },
     {
-      "time": 1781255100,
-      "value": 1251896.41
+      "time": 1781514300,
+      "value": 1283624.15
     },
     {
-      "time": 1781255400,
-      "value": 1252830.6
+      "time": 1781514600,
+      "value": 1283224.75
     },
     {
-      "time": 1781255700,
-      "value": 1253603.19
+      "time": 1781514900,
+      "value": 1283494
     },
     {
-      "time": 1781256000,
-      "value": 1254179.15
+      "time": 1781515200,
+      "value": 1281914.66
     },
     {
-      "time": 1781256300,
-      "value": 1254142.2
+      "time": 1781515398,
+      "value": 1281909.61
     },
     {
-      "time": 1781256600,
-      "value": 1255168.11
+      "time": 1781515500,
+      "value": 1282519.16
     },
     {
-      "time": 1781256900,
-      "value": 1255183.14
+      "time": 1781515583,
+      "value": 1282298.36
     },
     {
-      "time": 1781257200,
-      "value": 1256365.4
+      "time": 1781515585,
+      "value": 1282246.52
     },
     {
-      "time": 1781257500,
-      "value": 1256788.7
+      "time": 1781515588,
+      "value": 1282189.01
     },
     {
-      "time": 1781257800,
-      "value": 1256433.6
+      "time": 1781515590,
+      "value": 1282218.36
     },
     {
-      "time": 1781258100,
-      "value": 1255785.46
+      "time": 1781515591,
+      "value": 1282236.25
     },
     {
-      "time": 1781258400,
-      "value": 1255921.46
+      "time": 1781515592,
+      "value": 1282207.85
+    },
+    {
+      "time": 1781515593,
+      "value": 1282225.45
     }
   ]
 }
